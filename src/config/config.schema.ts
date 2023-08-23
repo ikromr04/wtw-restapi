@@ -39,13 +39,13 @@ export const configSchema = convict<ConfigSchema>({
   DB_HOST: {
     doc: 'The IP address to connect to the database.',
     format: 'ipaddress',
-    env: 'DB_NAME',
+    env: 'DB_HOST',
     default: null,
   },
   DB_PORT: {
     doc: 'The port to connect to the database.',
     format: 'port',
-    env: 'DB_NAME',
+    env: 'DB_PORT',
     default: null,
   },
   DB_USER: {
