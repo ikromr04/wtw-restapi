@@ -1,0 +1,26 @@
+{
+  "name": "wtw-restapi",
+  "description": "Rest API for \"What to watch\" application.",
+  "author": "Ikrom Rahimov (https://github.com/ikromr04)",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run build && node ./build/index.js",
+    "dev": "npm run ts ./src/index.ts",
+    "build": "npm run clean && npm run compile",
+    "clean": "rimraf build",
+    "compile": "tsc -p tsconfig.json",
+    "ts": "ts-node",
+    "lint": "eslint src/ --ext .ts"
+  },
+  "devDependencies": {
+    "@types/node": "^16.18.38",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "eslint": "^8.45.0",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5"
+  }
+}
