@@ -1,0 +1,778 @@
+openapi: 3.0.0
+info:
+  title: Description of the server API of the project "What to watch".
+  description: |-
+    * Description of project server routes.
+  version: '1.0.0'
+tags:
+  - name: Films
+    description: Films related requests
+  - name: Users
+    description: Users related requests
+  - name: Genres
+    description: Genres related requests
+paths:
+  /films:
+    get:
+      operationId: getFilms
+      summary: Get a list of movies
+      description: The service provides a resource for receiving films. By default, the service returns no more than 60 movies. The client can request more films or films by specific genre at a time by specifying the desired number or genre in the request parameter. The service always returns a list of movies sorted by publication date (descending).
+      tags:
+        - Films
+      parameters:
+        - name: limit
+          in: query
+          description: Films quantity
+          schema:
+            type: number
+            example: 60
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  allOf:
+                    - $ref: '#/components/schemas/id'
+                    - $ref: '#/components/schemas/filmCard'
+                    - $ref: '#/components/schemas/isFavorite'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+    post:
+      operationId: createFilm
+      summary: Create movie
+      description: The service provides a resource for adding new movies. Only authorized customers can add new movies.
+      tags:
+        - Films
+      parameters:
+        - $ref: '#/components/parameters/token'
+      security:
+        - tokenAuth: []
+      requestBody:
+        description: Data for creating a new movie
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/film'
+              required:
+                - title
+                - description
+                - publicationDate
+                - genres
+                - releaseYear
+                - preview
+                - video
+                - actors
+                - director
+                - runTime
+                - poster
+                - backgroundImage
+                - backgroundColor
+        required: true
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/id'
+                  - $ref: '#/components/schemas/film'
+                  - $ref: '#/components/schemas/isFavorite'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+
+  /films/:filmId:
+    get:
+      operationId: getFilmById
+      summary: Get film by id
+      description: The service provides a resource for obtaining information about the specific film.
+      tags:
+        - Films
+      parameters:
+        - $ref: '#/components/parameters/filmId'
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/id'
+                  - $ref: '#/components/schemas/film'
+                  - $ref: '#/components/schemas/filmDetails'
+                  - $ref: '#/components/schemas/isFavorite'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+
+    put:
+      operationId: updateFilm
+      summary: Update film
+      description: The service provides a resource for editing a movie card. The client can edit the movie cards he has created. If the movie card is successfully updated, the service returns the updated movie object to the client. Only authorized customers can edit movie cards.
+      tags:
+        - Films
+      parameters:
+        - $ref: '#/components/parameters/token'
+        - $ref: '#/components/parameters/filmId'
+      security:
+        - tokenAuth: []
+      requestBody:
+        description: Data for editing a movie
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/film'
+        required: true
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/id'
+                  - $ref: '#/components/schemas/film'
+                  - $ref: '#/components/schemas/filmDetails'
+                  - $ref: '#/components/schemas/isFavorite'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+    delete:
+      operationId: deleteFilm
+      summary: Delete film
+      description: The service provides a resource for deleting movies. Clients can only delete their own films. While deleting a movie, the comments to it will be deleted automatically. Only authorized users can delete a movie.
+      tags:
+        - Films
+      parameters:
+        - $ref: '#/components/parameters/token'
+        - $ref: '#/components/parameters/filmId'
+      security:
+        - tokenAuth: []
+      responses:
+        204:
+          description: No content
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+
+  /films/:filmId/details:
+    get:
+      operationId: getFilmDetails
+      summary: Get film details
+      description: The service provides a resource for obtaining detailed information on a single film.
+      tags:
+        - Films
+      parameters:
+        - $ref: '#/components/parameters/filmId'
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/id'
+                  - $ref: '#/components/schemas/film'
+                  - $ref: '#/components/schemas/filmDetails'
+                  - $ref: '#/components/schemas/isFavorite'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+
+  /films/:filmId/comments:
+    get:
+      operationId: getFilmComments
+      summary: Get film comments
+      description: The service provides a resource for getting a list of comments for a particular movie. The service always returns a list of 50 (or less) recent comments. Comments are sorted by publication date (descending). First the new ones, then the old ones.
+      tags:
+        - Films
+      parameters:
+        - $ref: '#/components/parameters/filmId'
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  allOf:
+                    - $ref: '#/components/schemas/id'
+                    - $ref: '#/components/schemas/comment'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+    post:
+      operationId: addComment
+      summary: Leave a comment
+      description: The service provides a resource for adding comments to a particular movie. Only authorized customers can add comments.
+      tags:
+        - Films
+      parameters:
+        - $ref: '#/components/parameters/token'
+        - $ref: '#/components/parameters/filmId'
+      security:
+        - tokenAuth: []
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/id'
+                  - $ref: '#/components/schemas/comment'
+        400:
+          description: Bad request
+        401:
+          description: Unauthorized
+
+  /films/promo:
+    get:
+      operationId: getPromoFilm
+      summary: Get promo film
+      description: The service provides a resource for obtaining information about the promotional film.
+      tags:
+        - Films
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/id'
+                  - $ref: '#/components/schemas/film'
+                  - $ref: '#/components/schemas/filmDetails'
+                  - $ref: '#/components/schemas/isFavorite'
+
+  /users/register:
+    post:
+      operationId: createUser
+      summary: Register a new user
+      description: The service provides a resource for creating a new user.
+      tags:
+        - Users
+      requestBody:
+        description: Data for creating a new user
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/user'
+                - $ref: '#/components/schemas/password'
+              required:
+                - name
+                - email
+                - password
+        required: true
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/id'
+                  - $ref: '#/components/schemas/user'
+                  - $ref: '#/components/schemas/token'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+
+  /users/login:
+    get:
+      operationId: checkAuth
+      summary: Check authentication
+      description: The service provides a resource for checking the status of the client - authorized or not.
+      tags:
+        - Users
+      parameters:
+        - $ref: '#/components/parameters/token'
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/id'
+                  - $ref: '#/components/schemas/user'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+    post:
+      operationId: login
+      summary: Login
+      description: Login to the closed part of the application. The service provides a resource for user authentication and authorization.
+      tags:
+        - Users
+      requestBody:
+        description: Data for logging in
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/email'
+                - $ref: '#/components/schemas/password'
+              required:
+                - email
+                - password
+        required: true
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/token'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+
+  /users/logout:
+    delete:
+      operationId: logout
+      summary: Logout
+      description: The service provides a resource to end the user's session. The resource is available only to authorized customers.
+      tags:
+        - Users
+      parameters:
+        - $ref: '#/components/parameters/token'
+      security:
+        - tokenAuth: []
+      responses:
+        204:
+          description: No content
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+
+  /users/favorite:
+    get:
+      operationId: getFavoriteFilms
+      summary: Get a list of favorite movies
+      description: The service provides a resource for getting a list of movies added to view. The service returns all movies added to view. The resource is available only to authorized customers.
+      tags:
+        - Users
+      parameters:
+        - $ref: '#/components/parameters/token'
+      security:
+        - tokenAuth: []
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  allOf:
+                    - $ref: '#/components/schemas/id'
+                    - $ref: '#/components/schemas/filmCard'
+                    - $ref: '#/components/schemas/isFavorite'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+
+  /users/favorite/:filmId:
+    post:
+      operationId: toggleFavorite
+      summary: Change the "favorite" status of a movie
+      description: The service provides a resource for adding and removing any movie to / from the list for viewing. The resource is available only to authorized customers.
+      tags:
+        - Users
+      parameters:
+        - $ref: '#/components/parameters/token'
+        - $ref: '#/components/parameters/filmId'
+      security:
+        - tokenAuth: []
+      responses:
+        200:
+          description: Ok
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+
+  /genres:
+    get:
+      operationId: getGenres
+      summary: Get a list of genres
+      description: The service provides a resource for receiving genres.
+      tags:
+        - Genres
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  allOf:
+                    - $ref: '#/components/schemas/id'
+                    - $ref: '#/components/schemas/genre'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+
+  /genre/:genreId:
+    get:
+      operationId: getFilmsByGenre
+      summary: Get  movies by genre
+      description: The service provides a resource for receiving films by genre. By default, the service returns no more than 60 movies. The client can request more films or films by specific genre at a time by specifying the desired number or genre in the request parameter. The service always returns a list of movies sorted by publication date (descending).
+      tags:
+        - Genres
+      parameters:
+        - name: limit
+          in: query
+          description: Films quantity
+          schema:
+            type: number
+            example: 60
+        - $ref: '#/components/parameters/filmId'
+      responses:
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  allOf:
+                    - $ref: '#/components/schemas/id'
+                    - $ref: '#/components/schemas/filmCard'
+                    - $ref: '#/components/schemas/isFavorite'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
+
+components:
+  schemas:
+    id:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 64d4b358a8fd4efdac0be584
+    token:
+      type: object
+      properties:
+        token:
+          type: string
+          example: T2xpdmVyLmNvbm5lckBnbWFpbC5jb20=
+    password:
+      type: object
+      properties:
+        password:
+          type: string
+          format: password
+          minLength: 6
+          maxLength: 12
+          example: harley9876
+    email:
+      type: object
+      properties:
+        email:
+          type: string
+          example: harley97@gmail.com
+          uniqueItems: true
+    isFavorite:
+      type: object
+      properties:
+        isFavorite:
+          type: boolean
+          example: true
+    user:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 15
+          example: Harley Davidson
+        email:
+          type: string
+          example: harley97@gmail.com
+          uniqueItems: true
+        avatar:
+          type: string
+          example: https://avatars/user.png
+    genre:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Comedy
+    filmCard:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Iron Man
+        publicationDate:
+          type: string
+          example: '1963-03-20T13:23:45.678+09:00'
+        genres:
+          type: array
+          items:
+            type: object
+            allOf:
+              - $ref: '#/components/schemas/id'
+              - $ref: '#/components/schemas/genre'
+        preview:
+          type: string
+          example: https://www.youtube.com/watch?v=8ugaeA-nMTc&ab_channel=RottenTomatoesClassicTrailers
+        author:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/id'
+            - $ref: '#/components/schemas/user'
+        poster:
+          type: string
+          example: https://www.themoviedb.org/t/p/original/78lPtwv72eTNqFW9COBYI0dWDJa.jpg
+        commentsCount:
+          type: number
+          example: 986501
+    film:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: Iron Man
+        description:
+          type: string
+          minLength: 20
+          maxLength: 1024
+          example: 2008's Iron Man tells the story of Tony Stark, a billionaire industrialist and genius inventor who is kidnapped and forced to build a devastating weapon. Instead, using his intelligence and ingenuity, Tony builds a high-tech suit of armor and escapes captivity. When he uncovers a nefarious plot with global implications, he dons his powerful armor and vows to protect the world as Iron Man.
+        publicationDate:
+          type: string
+          example: '1963-03-20T13:23:45.678+09:00'
+        genres:
+          type: array
+          items:
+            type: object
+            allOf:
+            - $ref: '#/components/schemas/id'
+            - $ref: '#/components/schemas/genre'
+        releaseYear:
+          type: number
+          example: 2008
+        preview:
+          type: string
+          example: https://www.youtube.com/watch?v=8ugaeA-nMTc&ab_channel=RottenTomatoesClassicTrailers
+        video:
+          type: string
+          example: https://www.marvel.com/movies/iron-man
+        actors:
+          type: array
+          items:
+            type: string
+            example:
+              - Robert Downey Jr
+              - Leslie Bibb
+              - Terrence Howard
+              - Shaun Toub
+              - Jeff Bridges
+              - Faran Tahir
+        director:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: Jon Favreau
+        runTime:
+          type: number
+          example: 126
+        poster:
+          type: string
+          example: https://www.themoviedb.org/t/p/original/78lPtwv72eTNqFW9COBYI0dWDJa.jpg
+        backgroundImage:
+          type: string
+          example: https://cdn.marvel.com/content/1x/ironman_lob_crd_01_4.jpg
+        backgroundColor:
+          type: string
+          example: '#182337'
+    filmDetails:
+      type: object
+      properties:
+        commentsCount:
+          type: number
+          example: 9865401
+        rating:
+          type: number
+          minLength: 1
+          maxLength: 10
+          example: 8
+        author:
+          allOf:
+          - $ref: '#/components/schemas/id'
+          - $ref: '#/components/schemas/user'
+    comment:
+      type: object
+      properties:
+        text:
+          type: string
+          minLength: 5
+          maxLength: 1024
+          example: The best film that I've ever seen
+        rating:
+          type: number
+          minLength: 1
+          maxLength: 10
+          example: 8
+        createdAt:
+          type: string
+          example: '1963-03-20T13:23:45.678+09:00'
+        author:
+          allOf:
+          - $ref: '#/components/schemas/id'
+          - $ref: '#/components/schemas/user'
+    errorMessage:
+      type: object
+      properties:
+        error:
+          type: string
+  parameters:
+    token:
+      name: token
+      in: header
+      description: User authorization token
+      required: true
+      schema:
+        type: string
+        example: T2xpdmVyLmNvbm5lckBnbWFpbC5jb20=
+    filmId:
+      name: filmId
+      in: path
+      description: Film's unique id
+      required: true
+      schema:
+        type: string
+        example: 64d4b358a8fd4efdac0be584
+    genreId:
+      name: genreId
+      in: path
+      description: Genre's unique id
+      required: true
+      schema:
+        type: string
+        example: 64d4b358a8fd4efdac0be584
