@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { ConfigInterface } from './config.interface.js';
 import { ConfigSchema, configSchema } from './config.schema.js';
-import { Component } from '../types/component.js';
+import { Component } from '../types/component.type.js';
 import { LoggerInterface } from '../logger/logger.interface.js';
 import { config } from 'dotenv';
 

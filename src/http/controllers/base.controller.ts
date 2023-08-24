@@ -4,7 +4,7 @@ import { injectable } from 'inversify';
 import { StatusCodes } from 'http-status-codes';
 
 @injectable()
-export default abstract class Controller implements ControllerInterface {
+export default abstract class BaseController implements ControllerInterface {
   public send<T>(res: Response, statusCode: number, data: T): void {
     res
       .type('application/json')
