@@ -17,7 +17,7 @@ export default class Application {
 
   public async init(): Promise<void> {
     this.logger.info('Application initialization...');
-
+    
     this.expressApp.listen(this.config.get('PORT'));
     this.logger.info(`Server started on http://${this.config.get('HOST')}:${this.config.get('PORT')}`);
   }
