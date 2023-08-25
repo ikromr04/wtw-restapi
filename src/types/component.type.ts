@@ -3,6 +3,8 @@ export const Component = {
   LoggerInterface: Symbol.for('LoggerInterface'),
   ConfigInterface: Symbol.for('ConfigInterface'),
   ApiRouter: Symbol.for('ApiRouter'),
-  FilmController: Symbol.for('FilmController'),
   ExceptionInterface: Symbol.for('ExceptionInterface'),
+  FilmController: Symbol.for('FilmController'),
+  UserController: Symbol.for('UserController'),
+  GenreController: Symbol.for('GenreController'),
 };
