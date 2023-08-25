@@ -14,6 +14,8 @@ import { ExceptionInterface } from './http/exception/exception.interface.js';
 import Exception from './http/exception/exception.js';
 import UserController from './http/controllers/user.controller.js';
 import GenreController from './http/controllers/genre.controller.js';
+import { DatabaseInterface } from './database/database.interface.js';
+import DatabaseService from './database/database.service.js';
 
 const appContainer = new Container();
 appContainer.bind<Application>(Component.Application).to(Application).inSingletonScope();
@@ -21,6 +23,7 @@ appContainer.bind<LoggerInterface>(Component.LoggerInterface).to(LoggerService).
 appContainer.bind<ConfigInterface>(Component.ConfigInterface).to(ConfigService).inSingletonScope();
 appContainer.bind<RouterInterface>(Component.ApiRouter).to(ApiRouter).inSingletonScope();
 appContainer.bind<ExceptionInterface>(Component.ExceptionInterface).to(Exception).inSingletonScope();
+appContainer.bind<DatabaseInterface>(Component.DatabaseInterface).to(DatabaseService).inSingletonScope();
 
 appContainer.bind<ControllerInterface>(Component.FilmController).to(FilmController).inSingletonScope();
 appContainer.bind<ControllerInterface>(Component.UserController).to(UserController).inSingletonScope();
