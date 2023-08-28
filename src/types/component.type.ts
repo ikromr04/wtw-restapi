@@ -5,6 +5,9 @@ export const Component = {
   ApiRouter: Symbol.for('ApiRouter'),
   ExceptionInterface: Symbol.for('ExceptionInterface'),
   DatabaseInterface: Symbol.for('DatabaseInterface'),
+  UserModel: Symbol.for('UserInterface'),
+
+  UserServiceInterface: Symbol.for('UserServiceInterface'),
 
   FilmController: Symbol.for('FilmController'),
   UserController: Symbol.for('UserController'),

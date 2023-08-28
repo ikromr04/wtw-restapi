@@ -11,7 +11,7 @@ export type ConfigSchema = {
   DB_PORT: string;
   DB_USER: string;
   DB_PASSWORD: string;
-  SALT: string;
+  SALT: number;
   JWT_SECRET: string;
   UPLOAD_DIRECTORY: string;
   STATIC_DIRECTORY: string;
@@ -62,7 +62,7 @@ export const configSchema = convict<ConfigSchema>({
   },
   SALT: {
     doc: 'Salt for password hashing.',
-    format: String,
+    format: Number,
     env: 'SALT',
     default: null,
   },

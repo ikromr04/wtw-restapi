@@ -16,6 +16,10 @@ import UserController from './http/controllers/user.controller.js';
 import GenreController from './http/controllers/genre.controller.js';
 import { DatabaseInterface } from './database/database.interface.js';
 import DatabaseService from './database/database.service.js';
+import { types } from '@typegoose/typegoose';
+import { UserClass, UserModel } from './database/models/user.model.js';
+import { UserServiceInterface } from './database/interfaces/user-service.interface.js';
+import UserService from './database/services/user.service.js';
 
 const appContainer = new Container();
 appContainer.bind<Application>(Component.Application).to(Application).inSingletonScope();
@@ -24,6 +28,10 @@ appContainer.bind<ConfigInterface>(Component.ConfigInterface).to(ConfigService).
 appContainer.bind<RouterInterface>(Component.ApiRouter).to(ApiRouter).inSingletonScope();
 appContainer.bind<ExceptionInterface>(Component.ExceptionInterface).to(Exception).inSingletonScope();
 appContainer.bind<DatabaseInterface>(Component.DatabaseInterface).to(DatabaseService).inSingletonScope();
+
+appContainer.bind<types.ModelType<UserClass>>(Component.UserModel).toConstantValue(UserModel);
+
+appContainer.bind<UserServiceInterface>(Component.UserServiceInterface).to(UserService).inSingletonScope();
 
 appContainer.bind<ControllerInterface>(Component.FilmController).to(FilmController).inSingletonScope();
 appContainer.bind<ControllerInterface>(Component.UserController).to(UserController).inSingletonScope();

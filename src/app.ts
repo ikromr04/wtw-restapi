@@ -6,6 +6,8 @@ import { ConfigInterface } from './config/config.interface.js';
 import { RouterInterface } from './http/router/router.interface.js';
 import cors from 'cors';
 import { ExceptionInterface } from './http/exception/exception.interface.js';
+import { DatabaseInterface } from './database/database.interface.js';
+import { createURI } from './utils/database.js';
 
 @injectable()
 export default class Application {
@@ -16,6 +18,7 @@ export default class Application {
     @inject(Component.ConfigInterface) private config: ConfigInterface,
     @inject(Component.ApiRouter) private apiRouter: RouterInterface,
     @inject(Component.ExceptionInterface) private exception: ExceptionInterface,
+    @inject(Component.DatabaseInterface) private databaseClient: DatabaseInterface,
   ) {
     this.expressApp = express();
   }
@@ -39,6 +42,15 @@ export default class Application {
     this.initMiddlewares();
     this.initRoutes();
     this.initExceptions();
+
+    const uri = createURI(
+      this.config.get('DB_USER'),
+      this.config.get('DB_PASSWORD'),
+      this.config.get('DB_HOST'),
+      this.config.get('DB_PORT'),
+      this.config.get('DB_NAME'),
+    );
+    this.databaseClient.connect(uri);
 
     this.expressApp.listen(this.config.get('PORT'));
     this.logger.info(`Server started on http://${this.config.get('HOST')}:${this.config.get('PORT')}`);
