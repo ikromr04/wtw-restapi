@@ -1,7 +1,7 @@
 import { DocumentType } from '@typegoose/typegoose';
-import CreateUserDTO from '../dto/user/create-user.dto.js';
+import CreateUserDTO from '../../http/dto/user/create-user.dto.js';
 import { UserClass } from '../models/user.model';
-import LoginUserDto from '../dto/user/login-user.dto.js';
+import LoginUserDto from '../../http/dto/user/login-user.dto.js';
 
 export interface UserServiceInterface {
   create(dto: CreateUserDTO): Promise<DocumentType<UserClass>>;

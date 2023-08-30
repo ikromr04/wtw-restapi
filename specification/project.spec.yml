@@ -348,6 +348,13 @@ paths:
               schema:
                 allOf:
                   - $ref: '#/components/schemas/errorMessage'
+        409:
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/errorMessage'
 
   /users/login:
     get:
@@ -749,7 +756,9 @@ components:
     errorMessage:
       type: object
       properties:
-        error:
+        errorType:
+          type: string
+        message:
           type: string
   parameters:
     token:

@@ -5,6 +5,7 @@ import expressAsyncHandler from 'express-async-handler';
 import { HttpMethod } from '../../types/http-method.type.js';
 import { Request, Response } from 'express-serve-static-core';
 import { LoggerInterface } from '../../logger/logger.interface.js';
+import { MiddlewareInterface } from '../middlewares/middleware.interface.js';
 
 @injectable()
 export default abstract class BaseRouter implements RouterInterface {
@@ -16,16 +17,23 @@ export default abstract class BaseRouter implements RouterInterface {
     this._router = Router();
   }
 
-  get router() {
+  public get router() {
     return this._router;
   }
 
   public addRoute(
-    method: HttpMethod,
     path: string,
+    method: HttpMethod,
     handler: (req: Request, res: Response) => void,
+    middlewares?: MiddlewareInterface[],
   ): void {
-    this._router[method](path, expressAsyncHandler(handler));
+    const routeHandler = expressAsyncHandler(handler);
+    const middlewareHandlers = middlewares?.map(
+      (middleware) => expressAsyncHandler(middleware.execute.bind(middleware))
+    );
+
+    const allHandlers = middlewareHandlers ? [...middlewareHandlers, routeHandler] : routeHandler;
+    this._router[method](path, allHandlers);
     this.logger.info(`Route registered: ${method.toUpperCase()} ${path}`);
   }
 }

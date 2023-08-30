@@ -1,9 +1,11 @@
 import { Request, Response } from 'express';
 import BaseController from './base.controller.js';
 import { inject, injectable } from 'inversify';
-import CreateUserDTO from '../../database/dto/user/create-user.dto.js';
 import { Component } from '../../types/component.type.js';
 import { UserServiceInterface } from '../../database/interfaces/user-service.interface.js';
+import HttpError from '../../errors/http.error.js';
+import { StatusCodes } from 'http-status-codes';
+import CreateUserDTO from '../dto/user/create-user.dto.js';
 
 @injectable()
 export default class UserController extends BaseController {
@@ -20,8 +22,10 @@ export default class UserController extends BaseController {
     const existedUser = await this.userService.findByEmail(body.email);
 
     if (existedUser) {
-      throw new Error(
-        `User with email «${body.email}» exists.`
+      throw new HttpError(
+        StatusCodes.CONFLICT,
+        `User with email «${body.email}» already exists.`,
+        'UserController::register',
       );
     }
 

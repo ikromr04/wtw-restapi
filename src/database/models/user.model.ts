@@ -17,16 +17,20 @@ export class UserClass extends defaultClasses.TimeStamps implements User {
     this.password = data.password;
   }
 
-  @prop()
+  @prop({
+    required: true,
+    minlength: [1, 'Name must be at least 1 character'],
+    maxlength: [15, 'Name cannot be more than 15 characters']
+  })
   public name!: string;
 
-  @prop()
+  @prop({ required: true })
   public email!: string;
 
   @prop()
   public avatar?: string;
 
-  @prop()
+  @prop({ required: true })
   public password!: string;
 
   public setPassword(password: string, salt: number): void {
